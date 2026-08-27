@@ -1,0 +1,14 @@
+{
+  "sampled_camera_frames": 830,
+  "reference_hands": 1660,
+  "explicitly_bad_hands": 2,
+  "evaluable_hands": 1658,
+  "evaluable_share": 0.9987951807228915,
+  "median_visible_joints": 21.0,
+  "minimum_visible_joints": 12,
+  "match_nme_threshold": 0.5,
+  "pck_thresholds": [
+    0.05,
+    0.1
+  ]
+}

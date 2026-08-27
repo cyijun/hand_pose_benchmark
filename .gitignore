@@ -1,0 +1,16 @@
+# Local runtimes, downloaded upstream code, and model assets.
+envs/
+models/
+third_party/
+
+# EgoDemo-derived reference/prediction rows and rendered source frames are not
+# redistributed. Keep only aggregate, non-image benchmark metrics.
+results/*
+!results/metrics/
+!results/metrics/*.csv
+!results/metrics/*.json
+
+__pycache__/
+*.py[cod]
+.env
+.DS_Store

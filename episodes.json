@@ -1,0 +1,30 @@
+[
+  {
+    "uuid": "03731840-dc5c-43c3-8cfb-f92e97ace0b7",
+    "task": "Clean Pastry Tongs",
+    "variant": "EgoStand-body",
+    "standard_task": "Clean Pastry Tongs",
+    "raw_task": "Clean Pastry Tongs"
+  },
+  {
+    "uuid": "0735cd42-c73b-4c4a-954a-de520a94f4a3",
+    "task": "Organize Weightlifting Wrist Wraps",
+    "variant": "EgoStand",
+    "standard_task": "Organize Weightlifting Wrist Wraps",
+    "raw_task": "Arrange Weightlifting Wrist Wraps"
+  },
+  {
+    "uuid": "09f455e8-cabd-4895-9fa9-bf062669dfa4",
+    "task": "Affix Shipping Label (on Package Surface)",
+    "variant": "EgoStand",
+    "standard_task": "Affix Shipping Label (on Package Surface)",
+    "raw_task": "Affix Shipping Label (on Package Surface)"
+  },
+  {
+    "uuid": "0acfac0c-af69-4c7a-9e76-7c630a16a3c4",
+    "task": "Showerhead Descaling by Scrubbing",
+    "variant": "EgoStand-body",
+    "standard_task": "Showerhead Descaling by Scrubbing",
+    "raw_task": "Showerhead Descaling by Scrubbing"
+  }
+]

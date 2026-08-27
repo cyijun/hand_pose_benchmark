@@ -1,0 +1,19 @@
+#!/bin/sh
+set -eu
+
+# Chromium headless-shell on Linux ARM64 reserves classic scrollbar width,
+# while the report reader uses a full-bleed 100vw top bar. Hide browser chrome
+# scrollbars during automated layout QA to match overlay-scrollbar clients such
+# as the user's macOS browser; scrolling and content layout remain enabled.
+if [ -n "${CHROMIUM_HEADLESS_SHELL:-}" ]; then
+  exec "$CHROMIUM_HEADLESS_SHELL" --hide-scrollbars "$@"
+fi
+
+for browser in "${XDG_CACHE_HOME:-$HOME/.cache}"/ms-playwright/chromium_headless_shell-*/chrome-linux/headless_shell; do
+  if [ -x "$browser" ]; then
+    exec "$browser" --hide-scrollbars "$@"
+  fi
+done
+
+echo "No Playwright Chromium headless shell found; set CHROMIUM_HEADLESS_SHELL." >&2
+exit 1

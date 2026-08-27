@@ -1,0 +1,993 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "EgoDemo 手部坐标开源方案技术评测",
+    "description": "Technical evaluation of maintained open-source hand-coordinate pipelines on four paired Lightwheel EgoDemo episodes.",
+    "generatedAt": "2026-08-27T16:25:58Z",
+    "cards": [
+      {
+        "id": "sample_frames",
+        "description": "Deterministic stride-10 sample across four tasks and both head cameras.",
+        "dataset": "summary",
+        "sourceId": "benchmark_metrics",
+        "metrics": [
+          {
+            "label": "Evaluated camera-frames",
+            "field": "sampled_camera_frames",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "reference_hands",
+        "description": "Reference hands that passed bad-frame, visibility, and minimum-size rules.",
+        "dataset": "summary",
+        "sourceId": "reference_quality",
+        "metrics": [
+          {
+            "label": "Evaluable reference hands",
+            "field": "evaluable_reference_hands",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "rtmpose_pck",
+        "description": "End-to-end PCK@0.10 for MediaPipe detection followed by RTMPose-Hand5 refinement.",
+        "dataset": "summary",
+        "sourceId": "benchmark_metrics",
+        "metrics": [
+          {
+            "label": "RTMPose end-to-end PCK@0.10",
+            "field": "rtmpose_e2e_pck_010",
+            "format": "percent"
+          }
+        ]
+      },
+      {
+        "id": "pck_gain",
+        "description": "Absolute PCK@0.10 improvement over MediaPipe landmarks using the same detections.",
+        "dataset": "summary",
+        "sourceId": "benchmark_metrics",
+        "metrics": [
+          {
+            "label": "PCK@0.10 gain vs MediaPipe",
+            "field": "pck_010_gain_vs_mediapipe",
+            "format": "percent",
+            "signed": true
+          }
+        ]
+      }
+    ],
+    "charts": [
+      {
+        "id": "overall_pck",
+        "title": "End-to-end PCK by method and threshold",
+        "subtitle": "RTMPose improves joint placement; the reference-box row is a non-deployable diagnostic upper bound.",
+        "intent": "comparison",
+        "type": "bar",
+        "dataset": "pck_long",
+        "sourceId": "benchmark_metrics",
+        "encodings": {
+          "x": {
+            "field": "method",
+            "type": "nominal",
+            "label": "Method"
+          },
+          "y": {
+            "field": "score",
+            "type": "quantitative",
+            "label": "End-to-end PCK",
+            "format": "percent"
+          },
+          "color": {
+            "field": "threshold",
+            "type": "nominal",
+            "label": "Threshold"
+          },
+          "tooltip": [
+            {
+              "field": "hand_recall",
+              "type": "quantitative",
+              "label": "Hand recall",
+              "format": "percent"
+            },
+            {
+              "field": "matched_hands",
+              "type": "quantitative",
+              "label": "Matched hands"
+            },
+            {
+              "field": "gt_hands",
+              "type": "quantitative",
+              "label": "Reference hands"
+            }
+          ]
+        },
+        "valueFormat": "percent",
+        "layout": "full",
+        "legend": {
+          "position": "bottom"
+        },
+        "settings": {
+          "groupMode": "grouped",
+          "showValues": true
+        }
+      },
+      {
+        "id": "task_pck",
+        "title": "End-to-end PCK@0.10 by task",
+        "subtitle": "Showerhead scrubbing is the hardest tested sequence; Sapiens2 full-frame does not localize either hand.",
+        "intent": "comparison",
+        "type": "bar",
+        "dataset": "task_long",
+        "sourceId": "benchmark_metrics",
+        "encodings": {
+          "x": {
+            "field": "task",
+            "type": "nominal",
+            "label": "Task"
+          },
+          "y": {
+            "field": "e2e_pck_010",
+            "type": "quantitative",
+            "label": "End-to-end PCK@0.10",
+            "format": "percent"
+          },
+          "color": {
+            "field": "method",
+            "type": "nominal",
+            "label": "Method"
+          },
+          "tooltip": [
+            {
+              "field": "e2e_pck_005",
+              "type": "quantitative",
+              "label": "PCK@0.05",
+              "format": "percent"
+            },
+            {
+              "field": "hand_recall",
+              "type": "quantitative",
+              "label": "Hand recall",
+              "format": "percent"
+            },
+            {
+              "field": "gt_hands",
+              "type": "quantitative",
+              "label": "Reference hands"
+            }
+          ]
+        },
+        "valueFormat": "percent",
+        "layout": "full",
+        "legend": {
+          "position": "bottom"
+        },
+        "settings": {
+          "groupMode": "grouped"
+        }
+      },
+      {
+        "id": "latency",
+        "title": "Median per-frame runtime by runnable method",
+        "subtitle": "Frame decoding is excluded; MediaPipe ran on CPU, while RTMPose and Sapiens2 used the NVIDIA GB10 GPU.",
+        "intent": "comparison",
+        "type": "bar",
+        "dataset": "latency",
+        "sourceId": "benchmark_metrics",
+        "encodings": {
+          "x": {
+            "field": "method",
+            "type": "nominal",
+            "label": "Method"
+          },
+          "y": {
+            "field": "median_runtime_ms",
+            "type": "quantitative",
+            "label": "Median runtime",
+            "unit": "ms"
+          },
+          "tooltip": [
+            {
+              "field": "mean_runtime_ms",
+              "type": "quantitative",
+              "label": "Mean runtime",
+              "unit": "ms"
+            },
+            {
+              "field": "p95_runtime_ms",
+              "type": "quantitative",
+              "label": "P95 runtime",
+              "unit": "ms"
+            },
+            {
+              "field": "device",
+              "type": "text",
+              "label": "Device"
+            },
+            {
+              "field": "precision",
+              "type": "text",
+              "label": "Precision"
+            }
+          ]
+        },
+        "valueFormat": "number",
+        "unit": "ms",
+        "layout": "full",
+        "settings": {
+          "showValues": true
+        }
+      }
+    ],
+    "tables": [
+      {
+        "id": "project_shortlist",
+        "title": "Project due diligence",
+        "subtitle": "Popularity is a trust signal, not a substitute for task fit and license review.",
+        "dataset": "projects",
+        "sourceId": "project_inventory",
+        "defaultSort": {
+          "field": "github_stars",
+          "direction": "desc"
+        },
+        "density": "dense",
+        "layout": "full",
+        "columns": [
+          {
+            "field": "project",
+            "label": "Project",
+            "type": "text"
+          },
+          {
+            "field": "organization",
+            "label": "Organization",
+            "type": "text"
+          },
+          {
+            "field": "github_stars",
+            "label": "GitHub stars",
+            "format": "compact"
+          },
+          {
+            "field": "license",
+            "label": "License",
+            "type": "text"
+          },
+          {
+            "field": "maintenance",
+            "label": "Maintenance signal",
+            "type": "text"
+          },
+          {
+            "field": "benchmark_status",
+            "label": "This run",
+            "type": "text"
+          },
+          {
+            "field": "main_risk",
+            "label": "Main caveat",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "id": "overall_metrics",
+        "title": "Overall benchmark detail",
+        "subtitle": "Exact evaluated counts and quality/runtime metrics; the starred method uses reference boxes.",
+        "dataset": "overall",
+        "sourceId": "benchmark_metrics",
+        "defaultSort": {
+          "field": "e2e_pck_010",
+          "direction": "desc"
+        },
+        "density": "dense",
+        "layout": "full",
+        "columns": [
+          {
+            "field": "method_short",
+            "label": "Method",
+            "type": "text"
+          },
+          {
+            "field": "hand_recall",
+            "label": "Hand recall",
+            "format": "percent"
+          },
+          {
+            "field": "hand_precision",
+            "label": "Hand precision",
+            "format": "percent"
+          },
+          {
+            "field": "e2e_pck_005",
+            "label": "E2E PCK@.05",
+            "format": "percent"
+          },
+          {
+            "field": "e2e_pck_010",
+            "label": "E2E PCK@.10",
+            "format": "percent"
+          },
+          {
+            "field": "matched_pck_010",
+            "label": "Matched PCK@.10",
+            "format": "percent"
+          },
+          {
+            "field": "mean_pixel_error",
+            "label": "Mean pixel error",
+            "format": "number"
+          },
+          {
+            "field": "median_runtime_ms",
+            "label": "Median runtime ms",
+            "format": "number"
+          }
+        ]
+      },
+      {
+        "id": "task_metrics",
+        "title": "Task-level benchmark detail",
+        "subtitle": "Deployable pipelines plus the Sapiens2 negative-domain baseline.",
+        "dataset": "task_long",
+        "sourceId": "benchmark_metrics",
+        "defaultSort": {
+          "field": "e2e_pck_010",
+          "direction": "desc"
+        },
+        "density": "dense",
+        "layout": "full",
+        "columns": [
+          {
+            "field": "task",
+            "label": "Task",
+            "type": "text"
+          },
+          {
+            "field": "method",
+            "label": "Method",
+            "type": "text"
+          },
+          {
+            "field": "hand_recall",
+            "label": "Hand recall",
+            "format": "percent"
+          },
+          {
+            "field": "e2e_pck_005",
+            "label": "E2E PCK@.05",
+            "format": "percent"
+          },
+          {
+            "field": "e2e_pck_010",
+            "label": "E2E PCK@.10",
+            "format": "percent"
+          },
+          {
+            "field": "gt_hands",
+            "label": "Reference hands",
+            "format": "number"
+          },
+          {
+            "field": "matched_hands",
+            "label": "Matched hands",
+            "format": "number"
+          }
+        ]
+      }
+    ],
+    "sources": [
+      {
+        "id": "benchmark_metrics",
+        "label": "EgoDemo benchmark metric snapshot",
+        "path": "queries/benchmark_metrics.sql"
+      },
+      {
+        "id": "reference_quality",
+        "label": "EgoDemo reference quality snapshot",
+        "path": "queries/reference_quality.sql"
+      },
+      {
+        "id": "project_inventory",
+        "label": "Official repository due-diligence snapshot",
+        "path": "queries/project_inventory.sql"
+      }
+    ],
+    "blocks": [
+      {
+        "id": "title",
+        "type": "markdown",
+        "body": "# EgoDemo 手部坐标开源方案技术评测"
+      },
+      {
+        "id": "technical_summary",
+        "type": "markdown",
+        "body": "## Technical summary\n\n**建议把 Google MediaPipe 作为手检测与在线跟踪层，把 OpenMMLab RTMPose-Hand5 作为 21 点精修层。** 两者组织可信、社区成熟、Apache-2.0，且已经在当前 ARM64/CUDA 机器和四段 EgoDemo 上跑通。双目三角化、时序滤波和低置信度人工复核应放在模型之后。Meta Sapiens2 可作为可信组织的负向对照，但不适合直接处理只看得到手臂的第一视角全帧。"
+      },
+      {
+        "id": "headline_metrics",
+        "type": "metric-strip",
+        "cardIds": [
+          "sample_frames",
+          "reference_hands",
+          "rtmpose_pck",
+          "pck_gain"
+        ]
+      },
+      {
+        "id": "key_findings",
+        "type": "markdown",
+        "sourceId": "benchmark_metrics",
+        "body": "## Key findings\n\n- **RTMPose + MediaPipe boxes 是当前最强可部署组合**：end-to-end PCK@0.10 为 **74.5%**，MediaPipe 原生 landmarks 为 **59.1%**，绝对提升 **15.4 个百分点**。\n- 两者手检召回都约 **88.6%**，说明 RTMPose 主要改善关节落点，无法补回 MediaPipe 漏掉的手。使用 reference boxes 的诊断上界为 **83.2%**，显示检测/裁框仍有约 **8.8 个百分点**空间。\n- Showerhead scrubbing 最难：组合方案 PCK@0.10 为 **65.8%**、召回 **84.5%**；这段更适合做遮挡和运动模糊回归集。\n- Sapiens2 全帧基线在 NME < 0.50 的匹配规则下 **0/1658** 手匹配，median runtime **388.2 ms**。这是明确的任务域不适配，不代表其全身姿态能力无效。"
+      },
+      {
+        "id": "overall_pck_block",
+        "type": "chart",
+        "chartId": "overall_pck",
+        "layout": "full"
+      },
+      {
+        "id": "task_pck_block",
+        "type": "chart",
+        "chartId": "task_pck",
+        "layout": "full"
+      },
+      {
+        "id": "latency_block",
+        "type": "chart",
+        "chartId": "latency",
+        "layout": "full"
+      },
+      {
+        "id": "project_due_diligence",
+        "type": "markdown",
+        "sourceId": "project_inventory",
+        "body": "## Project due diligence\n\nMediaPipe（**36.7k stars**）和 MMPose（**7.9k stars**）同时满足组织可信、社区规模、许可证宽松和任务适配。Sapiens2 来自 Meta 且在 2026 年活跃，但仍较新（**919 stars**），其自定义许可证明确限制 biometric processing，生产使用前必须单独审查。WiLoR 与 HaWoR 更贴近 3D/世界坐标研究问题，但模型是 CC BY-NC-ND，且需要用户自行同意并下载 MANO 资产；本次没有绕过这一授权门槛。"
+      },
+      {
+        "id": "project_table_block",
+        "type": "table",
+        "tableId": "project_shortlist",
+        "layout": "full"
+      },
+      {
+        "id": "methodology",
+        "type": "markdown",
+        "sourceId": "benchmark_metrics",
+        "body": "## Methodology\n\n四个 episode 覆盖 EgoStand 与 EgoStand-body，每段的左右头戴相机 Standard 视频每 10 帧采样一次并包含末帧，共 **830 camera-frames**。Standard 视频与 pose parquet 帧数对齐；同 UUID EgoRaw 只用于提供 undistorted intrinsics。世界坐标手点通过逐帧相机位姿投影到 2D。\n\nPCK 使用 reference hand bounding-box diagonal 归一化。**End-to-end PCK** 的分母包含漏检手，因此比只在成功匹配手上计算的 matched PCK 更适合评价自动标注流水线。NME < 0.50 才建立手匹配，匹配本身不使用左右手标签。视频解码时间不计入推理延迟。"
+      },
+      {
+        "id": "overall_table_block",
+        "type": "table",
+        "tableId": "overall_metrics",
+        "layout": "full"
+      },
+      {
+        "id": "task_table_block",
+        "type": "table",
+        "tableId": "task_metrics",
+        "layout": "full"
+      },
+      {
+        "id": "reference_quality_section",
+        "type": "markdown",
+        "sourceId": "reference_quality",
+        "body": "## Data quality and validity\n\n采样得到 **1660** 个 reference hands，其中 **2** 个被官方 bad-frame 元数据明确标坏，最终 **1658（99.88%）** 个可评估；median visible joints 为 **21/21**。投影骨架已对四个任务做视频叠加抽查，整体与手部对齐。\n\n这些结果适合作为 pipeline 回归验证，不应被解读成最终公开 benchmark：reference 是数据集提供的三维姿态投影，并非独立人工逐像素复标；相机标定偏差会同时影响 reference；当前也只有四个 episode。下一步应随机抽 100–200 帧做人工盲审，并把完全未见过的 episode 留作冻结测试集。"
+      },
+      {
+        "id": "limitations",
+        "type": "markdown",
+        "body": "## Limitations and license caveats\n\n- MediaPipe 此轮使用 IMAGE mode，没有利用 VIDEO mode 的时序跟踪；持续视频部署的召回与抖动需要另测。\n- 采样帧几乎都含两只 reference hands，没有真正的 no-hand negatives；这里的约 99.6% precision 不能外推到连续录像中的误检率。\n- RTMPose 的 deployable 结果依赖 MediaPipe boxes，因此两个阶段不是独立失败源；reference-box 结果只能作为裁框诊断，不能与端到端方法并列宣称。\n- MediaPipe 的 18.6 mm PA-MPJPE 是完整 Procrustes 对齐后的相对手形误差，不是绝对深度或世界坐标误差。\n- Sapiens2 使用 full-frame fallback、bfloat16、无 flip-test；它原生是 top-down whole-person 模型。自定义许可证包含用途限制，不能仅凭“Meta 开源”推断可用于商业生物特征处理。\n- WiLoR/HaWoR 的 MANO、Ultralytics 与模型许可证需要分别接受；这里不提供规避方法，也未把它们标成已跑通。"
+      },
+      {
+        "id": "recommended_pipeline",
+        "type": "markdown",
+        "body": "## Recommended pipeline\n\n1. **Detect/track:** MediaPipe VIDEO mode 每路相机输出 hand box、handedness、21 点和置信度。\n2. **Refine:** 对每个 padded square crop 跑 RTMPose-Hand5；保留 MediaPipe 原点、RTMPose 精修点和两套 score 以便审计。\n3. **Stereo/world:** 用双目标定做左右视角关联与三角化；用 reprojection error、骨长稳定性和时序速度作为自动质检。MediaPipe world landmarks 只作相对手形先验。\n4. **Human review:** 双目不一致、遮挡、低置信度、手消失/重现附近帧进入人工队列；可在相邻高置信帧间插值，但必须保留来源标记。\n5. **Regression gate:** 先冻结当前四段数据，要求 end-to-end PCK@0.10 不低于 **74%**、hand recall 不低于 **88%**；扩充 unseen episodes 和人工盲审集后再调整门槛。"
+      },
+      {
+        "id": "reproducibility",
+        "type": "markdown",
+        "body": "## Reproducibility\n\n所有 reference、prediction JSONL、分段 CSV、权重 SHA-256、独立 Python 环境和运行脚本都保存在 `hand_pose_benchmark`。官方权重校验：MediaPipe `fbc2a3…cde1`，RTMPose `b74fb5…6003`，Sapiens2 `f1b7b0…9106`。MMPose 为适配 ARM64/PyTorch 2.11 做了两处有注释的最小改动：跳过未使用的编译扩展 import，并让 CSPNeXt 使用 MMPose 自带 registry。"
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "generatedAt": "2026-08-27T16:25:58Z",
+    "status": "ready",
+    "datasets": {
+      "summary": [
+        {
+          "sampled_camera_frames": 830,
+          "evaluable_reference_hands": 1658,
+          "rtmpose_e2e_pck_010": 0.7447297374921018,
+          "pck_010_gain_vs_mediapipe": 0.15368487563903732
+        }
+      ],
+      "overall": [
+        {
+          "method": "Google MediaPipe Hand Landmarker",
+          "segment": "overall",
+          "value": "all",
+          "samples": 830,
+          "gt_hands": 1658,
+          "pred_hands": 1475,
+          "matched_hands": 1470,
+          "hand_recall": 0.8866103739445115,
+          "hand_precision": 0.9966101694915255,
+          "hand_f1": 0.9383977018831791,
+          "e2e_pck_005": 0.30217129071170085,
+          "e2e_pck_010": 0.5910448618530645,
+          "matched_pck_005": 0.3408163265306122,
+          "matched_pck_010": 0.6666342727567217,
+          "mean_pixel_error": 27.181134907571934,
+          "mean_nme": 0.100816699499026,
+          "handedness_accuracy": 0.8367346938775511,
+          "pa_mpjpe_mm": 18.588902235031547,
+          "mean_runtime_ms": 32.19817995601502,
+          "median_runtime_ms": 23.6855914699845,
+          "p95_runtime_ms": 60.42870399542153,
+          "mean_landmark_runtime_ms": 32.19817995601502,
+          "method_short": "MediaPipe",
+          "run_class": "runnable_pipeline"
+        },
+        {
+          "method": "OpenMMLab RTMPose-m + MediaPipe boxes",
+          "segment": "overall",
+          "value": "all",
+          "samples": 830,
+          "gt_hands": 1658,
+          "pred_hands": 1475,
+          "matched_hands": 1469,
+          "hand_recall": 0.8860072376357057,
+          "hand_precision": 0.9959322033898305,
+          "hand_f1": 0.9377593360995851,
+          "e2e_pck_005": 0.4357803435004883,
+          "e2e_pck_010": 0.7447297374921018,
+          "matched_pck_005": 0.49184738565269537,
+          "matched_pck_010": 0.8405458847936724,
+          "mean_pixel_error": 17.790410217588715,
+          "mean_nme": 0.06366019144632004,
+          "handedness_accuracy": 0.8373042886317222,
+          "pa_mpjpe_mm": null,
+          "mean_runtime_ms": 43.232815106348866,
+          "median_runtime_ms": 34.723040531389415,
+          "p95_runtime_ms": 71.76555715559516,
+          "mean_landmark_runtime_ms": 11.034635150333845,
+          "method_short": "RTMPose + MP boxes",
+          "run_class": "runnable_pipeline"
+        },
+        {
+          "method": "OpenMMLab RTMPose-m + reference boxes",
+          "segment": "overall",
+          "value": "all",
+          "samples": 830,
+          "gt_hands": 1658,
+          "pred_hands": 1658,
+          "matched_hands": 1658,
+          "hand_recall": 1,
+          "hand_precision": 1,
+          "hand_f1": 1,
+          "e2e_pck_005": 0.4846056637371475,
+          "e2e_pck_010": 0.8324717100350394,
+          "matched_pck_005": 0.4846056637371475,
+          "matched_pck_010": 0.8324717100350394,
+          "mean_pixel_error": 17.57714125683943,
+          "mean_nme": 0.06444192388560206,
+          "handedness_accuracy": 1,
+          "pa_mpjpe_mm": null,
+          "mean_runtime_ms": 11.699872232864173,
+          "median_runtime_ms": 10.890056000789627,
+          "p95_runtime_ms": 11.913571163313463,
+          "mean_landmark_runtime_ms": 11.699872232864173,
+          "method_short": "RTMPose + reference boxes*",
+          "run_class": "diagnostic_only"
+        },
+        {
+          "method": "Meta Sapiens2-0.4B (full-frame bbox)",
+          "segment": "overall",
+          "value": "all",
+          "samples": 830,
+          "gt_hands": 1658,
+          "pred_hands": 1660,
+          "matched_hands": 0,
+          "hand_recall": 0,
+          "hand_precision": 0,
+          "hand_f1": null,
+          "e2e_pck_005": 0,
+          "e2e_pck_010": 0,
+          "matched_pck_005": null,
+          "matched_pck_010": null,
+          "mean_pixel_error": null,
+          "mean_nme": null,
+          "handedness_accuracy": null,
+          "pa_mpjpe_mm": null,
+          "mean_runtime_ms": 388.4847944695643,
+          "median_runtime_ms": 388.20484949974343,
+          "p95_runtime_ms": 391.30159228807315,
+          "mean_landmark_runtime_ms": 388.4847944695643,
+          "method_short": "Sapiens2 full frame",
+          "run_class": "runnable_pipeline"
+        }
+      ],
+      "pck_long": [
+        {
+          "method": "MediaPipe",
+          "threshold": "PCK@0.05",
+          "score": 0.30217129071170085,
+          "hand_recall": 0.8866103739445115,
+          "matched_hands": 1470,
+          "gt_hands": 1658,
+          "run_class": "runnable_pipeline"
+        },
+        {
+          "method": "MediaPipe",
+          "threshold": "PCK@0.10",
+          "score": 0.5910448618530645,
+          "hand_recall": 0.8866103739445115,
+          "matched_hands": 1470,
+          "gt_hands": 1658,
+          "run_class": "runnable_pipeline"
+        },
+        {
+          "method": "RTMPose + MP boxes",
+          "threshold": "PCK@0.05",
+          "score": 0.4357803435004883,
+          "hand_recall": 0.8860072376357057,
+          "matched_hands": 1469,
+          "gt_hands": 1658,
+          "run_class": "runnable_pipeline"
+        },
+        {
+          "method": "RTMPose + MP boxes",
+          "threshold": "PCK@0.10",
+          "score": 0.7447297374921018,
+          "hand_recall": 0.8860072376357057,
+          "matched_hands": 1469,
+          "gt_hands": 1658,
+          "run_class": "runnable_pipeline"
+        },
+        {
+          "method": "RTMPose + reference boxes*",
+          "threshold": "PCK@0.05",
+          "score": 0.4846056637371475,
+          "hand_recall": 1,
+          "matched_hands": 1658,
+          "gt_hands": 1658,
+          "run_class": "diagnostic_only"
+        },
+        {
+          "method": "RTMPose + reference boxes*",
+          "threshold": "PCK@0.10",
+          "score": 0.8324717100350394,
+          "hand_recall": 1,
+          "matched_hands": 1658,
+          "gt_hands": 1658,
+          "run_class": "diagnostic_only"
+        },
+        {
+          "method": "Sapiens2 full frame",
+          "threshold": "PCK@0.05",
+          "score": 0,
+          "hand_recall": 0,
+          "matched_hands": 0,
+          "gt_hands": 1658,
+          "run_class": "runnable_pipeline"
+        },
+        {
+          "method": "Sapiens2 full frame",
+          "threshold": "PCK@0.10",
+          "score": 0,
+          "hand_recall": 0,
+          "matched_hands": 0,
+          "gt_hands": 1658,
+          "run_class": "runnable_pipeline"
+        }
+      ],
+      "task_long": [
+        {
+          "task": "Affix Shipping Label (on Package Surface)",
+          "method": "MediaPipe",
+          "e2e_pck_010": 0.7522195318805488,
+          "e2e_pck_005": 0.42493946731234866,
+          "hand_recall": 0.9703389830508474,
+          "gt_hands": 236,
+          "matched_hands": 229
+        },
+        {
+          "task": "Clean Pastry Tongs",
+          "method": "MediaPipe",
+          "e2e_pck_010": 0.5575091575091575,
+          "e2e_pck_005": 0.29102564102564105,
+          "hand_recall": 0.9192307692307692,
+          "gt_hands": 260,
+          "matched_hands": 239
+        },
+        {
+          "task": "Organize Weightlifting Wrist Wraps",
+          "method": "MediaPipe",
+          "e2e_pck_010": 0.7620415982484948,
+          "e2e_pck_005": 0.4454022988505747,
+          "hand_recall": 0.9022988505747126,
+          "gt_hands": 348,
+          "matched_hands": 314
+        },
+        {
+          "task": "Showerhead Descaling by Scrubbing",
+          "method": "MediaPipe",
+          "e2e_pck_010": 0.48192348192348194,
+          "e2e_pck_005": 0.2089037089037089,
+          "hand_recall": 0.8452088452088452,
+          "gt_hands": 814,
+          "matched_hands": 688
+        },
+        {
+          "task": "Affix Shipping Label (on Package Surface)",
+          "method": "RTMPose + MP boxes",
+          "e2e_pck_010": 0.821226795803067,
+          "e2e_pck_005": 0.47538337368845845,
+          "hand_recall": 0.9703389830508474,
+          "gt_hands": 236,
+          "matched_hands": 229
+        },
+        {
+          "task": "Clean Pastry Tongs",
+          "method": "RTMPose + MP boxes",
+          "e2e_pck_010": 0.8201465201465201,
+          "e2e_pck_005": 0.5252747252747253,
+          "hand_recall": 0.9153846153846154,
+          "gt_hands": 260,
+          "matched_hands": 238
+        },
+        {
+          "task": "Organize Weightlifting Wrist Wraps",
+          "method": "RTMPose + MP boxes",
+          "e2e_pck_010": 0.8389436234263821,
+          "e2e_pck_005": 0.5677339901477833,
+          "hand_recall": 0.9022988505747126,
+          "gt_hands": 348,
+          "matched_hands": 314
+        },
+        {
+          "task": "Showerhead Descaling by Scrubbing",
+          "method": "RTMPose + MP boxes",
+          "e2e_pck_010": 0.6581841581841582,
+          "e2e_pck_005": 0.3393003393003393,
+          "hand_recall": 0.8452088452088452,
+          "gt_hands": 814,
+          "matched_hands": 688
+        },
+        {
+          "task": "Affix Shipping Label (on Package Surface)",
+          "method": "Sapiens2 full frame",
+          "e2e_pck_010": 0,
+          "e2e_pck_005": 0,
+          "hand_recall": 0,
+          "gt_hands": 236,
+          "matched_hands": 0
+        },
+        {
+          "task": "Clean Pastry Tongs",
+          "method": "Sapiens2 full frame",
+          "e2e_pck_010": 0,
+          "e2e_pck_005": 0,
+          "hand_recall": 0,
+          "gt_hands": 260,
+          "matched_hands": 0
+        },
+        {
+          "task": "Organize Weightlifting Wrist Wraps",
+          "method": "Sapiens2 full frame",
+          "e2e_pck_010": 0,
+          "e2e_pck_005": 0,
+          "hand_recall": 0,
+          "gt_hands": 348,
+          "matched_hands": 0
+        },
+        {
+          "task": "Showerhead Descaling by Scrubbing",
+          "method": "Sapiens2 full frame",
+          "e2e_pck_010": 0,
+          "e2e_pck_005": 0,
+          "hand_recall": 0,
+          "gt_hands": 814,
+          "matched_hands": 0
+        }
+      ],
+      "latency": [
+        {
+          "method": "MediaPipe",
+          "median_runtime_ms": 23.6855914699845,
+          "mean_runtime_ms": 32.19817995601502,
+          "p95_runtime_ms": 60.42870399542153,
+          "landmark_stage_mean_ms": 32.19817995601502,
+          "device": "CPU",
+          "precision": "default",
+          "run_class": "runnable_pipeline"
+        },
+        {
+          "method": "RTMPose + MP boxes",
+          "median_runtime_ms": 34.723040531389415,
+          "mean_runtime_ms": 43.232815106348866,
+          "p95_runtime_ms": 71.76555715559516,
+          "landmark_stage_mean_ms": 11.034635150333845,
+          "device": "NVIDIA GB10 GPU",
+          "precision": "default",
+          "run_class": "runnable_pipeline"
+        },
+        {
+          "method": "Sapiens2 full frame",
+          "median_runtime_ms": 388.20484949974343,
+          "mean_runtime_ms": 388.4847944695643,
+          "p95_runtime_ms": 391.30159228807315,
+          "landmark_stage_mean_ms": 388.4847944695643,
+          "device": "NVIDIA GB10 GPU",
+          "precision": "bfloat16",
+          "run_class": "runnable_pipeline"
+        }
+      ],
+      "projects": [
+        {
+          "project": "MediaPipe Hand Landmarker",
+          "organization": "Google AI Edge",
+          "github_stars": 36700,
+          "license": "Apache-2.0",
+          "maintenance": "Active; official Python guide updated 2026-08-17",
+          "fit": "Hand detection + 21-point 2D + hand-relative 3D",
+          "benchmark_status": "Ran — recommended detector / fast baseline",
+          "main_risk": "World landmarks are hand-relative, not absolute camera/world pose",
+          "official_url": "https://github.com/google-ai-edge/mediapipe"
+        },
+        {
+          "project": "MMPose / RTMPose-Hand5",
+          "organization": "OpenMMLab",
+          "github_stars": 7900,
+          "license": "Apache-2.0",
+          "maintenance": "Established ecosystem; tested main commit 2025-08-04",
+          "fit": "21-point 2D hand refinement from a crop",
+          "benchmark_status": "Ran — recommended landmark refiner",
+          "main_risk": "Needs a detector; ARM64 required two small portability edits",
+          "official_url": "https://github.com/open-mmlab/mmpose"
+        },
+        {
+          "project": "Sapiens2 Pose 0.4B",
+          "organization": "Meta",
+          "github_stars": 919,
+          "license": "Sapiens2 custom license",
+          "maintenance": "Initial release 2026-04; tested commit 2026-05-24",
+          "fit": "308 whole-body keypoints; hand points are a subset",
+          "benchmark_status": "Ran — reject full-frame ego setup",
+          "main_risk": "Not a hand detector; custom license restricts biometric processing",
+          "official_url": "https://github.com/facebookresearch/sapiens2"
+        },
+        {
+          "project": "WiLoR",
+          "organization": "Imperial College London / SJTU",
+          "github_stars": 650,
+          "license": "CC BY-NC-ND + MANO + Ultralytics",
+          "maintenance": "Official speed update 2026-03; tested repo commit 2026-04-07",
+          "fit": "End-to-end 3D hand localization and MANO mesh",
+          "benchmark_status": "Not run — MANO account/license asset required",
+          "main_risk": "Non-commercial/no-derivatives terms and extra licensed assets",
+          "official_url": "https://github.com/rolpotamias/WiLoR"
+        },
+        {
+          "project": "HaWoR",
+          "organization": "SJTU / Imperial College London",
+          "github_stars": 337,
+          "license": "CC BY-NC-ND + MANO",
+          "maintenance": "CVPR 2025 Highlight; training code still marked pending",
+          "fit": "World-space egocentric video hand reconstruction",
+          "benchmark_status": "Not run — heavy stack and licensed MANO asset",
+          "main_risk": "DROID-SLAM + Metric3D + old CUDA stack; weak deployability",
+          "official_url": "https://github.com/ThunderVVV/HaWoR"
+        },
+        {
+          "project": "Hand Tracking Toolkit",
+          "organization": "Meta",
+          "github_stars": 74,
+          "license": "Apache-2.0; MANO/data terms optional",
+          "maintenance": "Official research evaluator with tests",
+          "fit": "Metrics, loaders and visualization; no inference model",
+          "benchmark_status": "Use as evaluation-design reference only",
+          "main_risk": "Not an autolabeling model",
+          "official_url": "https://github.com/facebookresearch/hand_tracking_toolkit"
+        }
+      ],
+      "reference_quality": [
+        {
+          "sampled_camera_frames": 830,
+          "reference_hands": 1660,
+          "explicitly_bad_hands": 2,
+          "evaluable_hands": 1658,
+          "evaluable_share": 0.9987951807228915,
+          "median_visible_joints": 21.0,
+          "minimum_visible_joints": 12,
+          "match_nme_threshold": 0.5,
+          "pck_thresholds": "0.05, 0.10"
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "benchmark_metrics",
+      "label": "EgoDemo benchmark metric snapshot",
+      "path": "queries/benchmark_metrics.sql",
+      "query": {
+        "engine": "DuckDB 1.x",
+        "sql": "-- DuckDB query over the reviewed Python benchmark outputs.\nSELECT\n  method,\n  segment,\n  value,\n  samples,\n  gt_hands,\n  pred_hands,\n  matched_hands,\n  hand_recall,\n  hand_precision,\n  hand_f1,\n  e2e_pck_005,\n  e2e_pck_010,\n  matched_pck_005,\n  matched_pck_010,\n  mean_pixel_error,\n  mean_nme,\n  handedness_accuracy,\n  pa_mpjpe_mm,\n  mean_runtime_ms,\n  median_runtime_ms,\n  p95_runtime_ms,\n  mean_landmark_runtime_ms\nFROM read_csv_auto(\n  'hand_pose_benchmark/results/metrics/metrics_all_segments.csv',\n  header = true\n);\n",
+        "language": "sql",
+        "executed_at": "2026-08-27T16:30:00Z",
+        "description": "Reads the reviewed evaluator outputs for overall, task, and camera segments.",
+        "tables_used": [
+          "hand_pose_benchmark/results/metrics/metrics_all_segments.csv"
+        ],
+        "filters": [
+          "Four downloaded EgoDemo tasks, both head cameras",
+          "Every 10th Standard-video frame plus each final frame",
+          "Hands with an explicit bad reason, fewer than 12 visible joints, or bbox diagonal below 16 px are excluded"
+        ],
+        "metric_definitions": [
+          "End-to-end PCK@t = correctly localized reference joints / all evaluable reference joints; an undetected hand contributes zero correct joints.",
+          "Matched PCK@t uses only matched hands; t is normalized by the reference hand bounding-box diagonal.",
+          "A reference/prediction pair is matched when mean normalized joint error is below 0.50; pairing is minimum-cost and independent of handedness.",
+          "Reported runtime starts after video frame decoding. RTMPose end-to-end runtime adds MediaPipe detection and RTMPose landmark stages."
+        ]
+      }
+    },
+    {
+      "id": "reference_quality",
+      "label": "EgoDemo reference quality snapshot",
+      "path": "queries/reference_quality.sql",
+      "query": {
+        "engine": "DuckDB 1.x",
+        "sql": "-- DuckDB query over the quality summary emitted by src/evaluate.py.\nSELECT\n  sampled_camera_frames,\n  reference_hands,\n  explicitly_bad_hands,\n  evaluable_hands,\n  evaluable_share,\n  median_visible_joints,\n  minimum_visible_joints,\n  match_nme_threshold,\n  pck_thresholds\nFROM read_json_auto(\n  'hand_pose_benchmark/results/metrics/reference_quality.json'\n);\n",
+        "language": "sql",
+        "executed_at": "2026-08-27T16:30:00Z",
+        "description": "Reads the reference eligibility and explicit bad-frame summary.",
+        "tables_used": [
+          "hand_pose_benchmark/results/metrics/reference_quality.json"
+        ],
+        "filters": [
+          "Same deterministic stride-10 camera-frame sample as the benchmark"
+        ],
+        "metric_definitions": [
+          "Evaluable share = evaluable reference hands / all sampled reference hands.",
+          "Visible joints are projected into the Standard video using the same-UUID Raw undistorted camera intrinsics and per-frame camera pose."
+        ]
+      }
+    },
+    {
+      "id": "project_inventory",
+      "label": "Official repository due-diligence snapshot",
+      "path": "queries/project_inventory.sql",
+      "query": {
+        "engine": "DuckDB 1.x",
+        "sql": "-- Curated 2026-08-27 snapshot of official repository metadata and due diligence.\nSELECT *\nFROM (\n  VALUES\n    ('MediaPipe Hand Landmarker', 'Google AI Edge', 36700, 'Apache-2.0',\n     'run_recommended', '2D landmarks, handedness, hand-relative 3D',\n     'https://github.com/google-ai-edge/mediapipe'),\n    ('MMPose / RTMPose-Hand5', 'OpenMMLab', 7900, 'Apache-2.0',\n     'run_recommended', '2D hand landmarks; requires a hand box',\n     'https://github.com/open-mmlab/mmpose'),\n    ('Sapiens2 Pose 0.4B', 'Meta', 919, 'Sapiens2 custom license',\n     'run_rejected_for_ego_full_frame', '308 whole-body keypoints; not a hand detector',\n     'https://github.com/facebookresearch/sapiens2'),\n    ('WiLoR', 'Imperial College London / SJTU', 650, 'CC BY-NC-ND + MANO',\n     'not_run_license_asset_required', 'End-to-end 3D hand mesh and localization',\n     'https://github.com/rolpotamias/WiLoR'),\n    ('HaWoR', 'SJTU / Imperial College London', 337, 'CC BY-NC-ND + MANO',\n     'not_run_heavy_license_asset_required', 'World-space egocentric hand motion',\n     'https://github.com/ThunderVVV/HaWoR'),\n    ('Hand Tracking Toolkit', 'Meta', 74, 'Apache-2.0 + data/model licenses',\n     'evaluation_utility_only', 'Egocentric metrics, data loading and visualization',\n     'https://github.com/facebookresearch/hand_tracking_toolkit')\n) AS projects(project, organization, github_stars, license, status, task_fit, official_url);\n",
+        "language": "sql",
+        "executed_at": "2026-08-27T16:30:00Z",
+        "description": "Curated official-repository metadata checked on 2026-08-27.",
+        "tables_used": [
+          "github.com/google-ai-edge/mediapipe",
+          "github.com/open-mmlab/mmpose",
+          "github.com/facebookresearch/sapiens2",
+          "github.com/rolpotamias/WiLoR",
+          "github.com/ThunderVVV/HaWoR",
+          "github.com/facebookresearch/hand_tracking_toolkit"
+        ],
+        "filters": [
+          "Official repositories only",
+          "Projects relevant to hand coordinates, egocentric reconstruction, or evaluation"
+        ],
+        "metric_definitions": [
+          "GitHub stars are point-in-time counts displayed by the official repositories on 2026-08-27."
+        ]
+      }
+    }
+  ]
+}
